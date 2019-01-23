@@ -183,6 +183,77 @@ aov(y~x,data=dat)
 
 
 ```
+ 
+#### Use in single factor experiment
+
+Single factor experiment uses only one explanatory variable.  
+```{r}
+
+lendingclub <- read.csv('./lendingclub.csv')
+
+glimpse(lendingclub)
+
+# Find median loan_amnt, mean int_rate, and mean annual_inc with summarise()
+lendingclub %>% summarise(median(loan_amnt), mean(int_rate), mean(annual_inc))
+
+# Use ggplot2 to build a bar chart of purpose variable
+lendingclub %>% ggplot(aes(purpose)) + geom_bar()
+
+# Use recode() to create the new purpose_recode variable
+lendingclub$purpose_recode <- lendingclub$purpose %>% recode( "credit_card" = "debt_related", "debt_consolidation" = "debt_related", "medical" = "debt_related","car" = "big_purchase", "major_purchase" = "big_purchase", "vacation" = "big_purchase","moving" = "life_change", "small_business" = "life_change", "wedding" = "life_change","house" = "home_related", "home_improvement" = "home_related")
+
+```
   
-Single factor experiment uses only one explanatory variable.
-### 
+We are now going to perform a single factor experiment to see how does loan purpose affect loan amount.  
+Remember that for an ANOVA test, the null hypothesis will be that all of the mean funded amounts are equal across the levels of purpose_recode. The alternative hypothesis is that at least one level of purpose_recode has a different mean. We will not be sure which, however, without some post hoc analysis, so it will be helpful to know how ANOVA results get stored as an object in R.
+
+```{r}
+# Build a linear regression model, stored as purpose_model
+purpose_model <- lm(funded_amnt~purpose_recode, data = lendingclub)
+
+# Examine results of purpose_model
+summary(purpose_model)
+
+# Get anova results and save as purpose_anova
+purpose_anova <- anova(purpose_model)
+
+# Examine class of purpose_anova
+purpose_anova%>%class()
+
+```
+  The low p-value suggests that the result of the ANOVA test is statistically significant; and thus we can reject the Null hypothesis and accept the alternate hypothesios that atleast one mean is different. But which one?  
+The post hoc test is done to determine which means of `purpose_recode` are different. We are going to use Tukey's HSD test (Honest Significant Difference) using the function `TukeyHSD()`.
+
+```{r echo=FALSE, results = 'asis'}
+# Rebuild the last model using aov()
+# Use aov() to build purpose_aov
+purpose_aov <- aov(funded_amnt~purpose_recode, data = lendingclub)
+
+# Conduct Tukey's HSD test to create tukey_output
+tukey_output <- TukeyHSD(x = purpose_aov, which = "purpose_recode", conf.level = 0.95)
+
+# Tidy tukey_output to make sense of the results
+library(knitr)
+kable(tidy(tukey_output))
+
+
+```
+  If we look at the p-values for each comparison of the levels of `purpose_recode`, we can see that all the means are statistically significantly different. In this case, these tiny p-values are most likely to be due to large sample size, and further tests would be required to determine what's actually significant in the case of loans (known as the practical significance).  
+  
+  
+#### Use in multiple factor experiment
+  
+It is known in the real world that loan amounts aren't just driven by purpose alone. So lets try to bake in other independent variables into the model.  
+```{r}
+# examine how purpose_recode and emp_length affect the loan funded amount
+purpose_emp_aov <- aov(funded_amnt~purpose_recode+emp_length, data = lendingclub)
+
+#  Print
+purpose_emp_aov
+
+# printing doesnt show p values but summary() does
+summary(purpose_emp_aov)
+
+```
+  We could also perform Tukey's HSD test on this aov, but given that emp_length has 12 levels, it'll be quite the output. If it was important to the experiment to know the answer, we'd definitely need to look at it.
+

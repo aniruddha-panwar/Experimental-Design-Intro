@@ -247,7 +247,6 @@ $(document).ready(function () {
 </ul></li>
 <li><a href="#single-and-multiple-factor-experiments"><span class="toc-section-number">0.3</span> Single and Multiple Factor Experiments</a><ul>
 <li><a href="#anova"><span class="toc-section-number">0.3.1</span> ANOVA</a></li>
-<li><a href="#section"><span class="toc-section-number">0.3.2</span> </a></li>
 </ul></li>
 </ul>
 </div>
@@ -478,9 +477,267 @@ glm.fit &lt;-<span class="st"> </span><span class="kw">glm</span>(y<span class="
 ## 
 ## Residual standard error: 0.8971513
 ## Estimated effects may be unbalanced</code></pre>
-</div>
-<div id="section" class="section level3">
-<h3><span class="header-section-number">0.3.2</span> </h3>
+<p>Single factor experiment uses only one explanatory variable.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lendingclub &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'./lendingclub.csv'</span>)
+
+<span class="kw">glimpse</span>(lendingclub)</code></pre></div>
+<pre><code>## Observations: 1,500
+## Variables: 75
+## $ X                           &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,...
+## $ id                          &lt;int&gt; 1077501, 1077430, 1077175, 1076863...
+## $ member_id                   &lt;int&gt; 1296599, 1314167, 1313524, 1277178...
+## $ loan_amnt                   &lt;int&gt; 5000, 2500, 2400, 10000, 3000, 500...
+## $ funded_amnt                 &lt;int&gt; 5000, 2500, 2400, 10000, 3000, 500...
+## $ funded_amnt_inv             &lt;dbl&gt; 4975.00, 2500.00, 2400.00, 10000.0...
+## $ term                        &lt;fct&gt;  36 months,  60 months,  36 months...
+## $ int_rate                    &lt;dbl&gt; 10.65, 15.27, 15.96, 13.49, 12.69,...
+## $ installment                 &lt;dbl&gt; 162.87, 59.83, 84.33, 339.31, 67.7...
+## $ grade                       &lt;fct&gt; B, C, C, C, B, A, C, E, F, B, C, B...
+## $ sub_grade                   &lt;fct&gt; B2, C4, C5, C1, B5, A4, C5, E1, F2...
+## $ emp_title                   &lt;fct&gt; , Ryder, , AIR RESOURCES BOARD, Un...
+## $ emp_length                  &lt;fct&gt; 10+ years, &lt; 1 year, 10+ years, 10...
+## $ home_ownership              &lt;fct&gt; RENT, RENT, RENT, RENT, RENT, RENT...
+## $ annual_inc                  &lt;dbl&gt; 24000.00, 30000.00, 12252.00, 4920...
+## $ verification_status         &lt;fct&gt; Verified, Source Verified, Not Ver...
+## $ issue_d                     &lt;fct&gt; Dec-2011, Dec-2011, Dec-2011, Dec-...
+## $ loan_status                 &lt;fct&gt; Fully Paid, Charged Off, Fully Pai...
+## $ pymnt_plan                  &lt;fct&gt; n, n, n, n, n, n, n, n, n, n, n, n...
+## $ url                         &lt;fct&gt; https://www.lendingclub.com/browse...
+## $ desc                        &lt;fct&gt;   Borrower added on 12/22/11 &gt; I n...
+## $ purpose                     &lt;fct&gt; credit_card, car, small_business, ...
+## $ title                       &lt;fct&gt; Computer, bike, real estate busine...
+## $ zip_code                    &lt;fct&gt; 860xx, 309xx, 606xx, 917xx, 972xx,...
+## $ addr_state                  &lt;fct&gt; AZ, GA, IL, CA, OR, AZ, NC, CA, CA...
+## $ dti                         &lt;dbl&gt; 27.65, 1.00, 8.72, 20.00, 17.94, 1...
+## $ delinq_2yrs                 &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
+## $ earliest_cr_line            &lt;fct&gt; Jan-1985, Apr-1999, Nov-2001, Feb-...
+## $ inq_last_6mths              &lt;int&gt; 1, 5, 2, 1, 0, 3, 1, 2, 2, 0, 2, 0...
+## $ mths_since_last_delinq      &lt;int&gt; NA, NA, NA, 35, 38, NA, NA, NA, NA...
+## $ mths_since_last_record      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ open_acc                    &lt;int&gt; 3, 3, 2, 10, 15, 9, 7, 4, 11, 2, 1...
+## $ pub_rec                     &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
+## $ revol_bal                   &lt;int&gt; 13648, 1687, 2956, 5598, 27783, 79...
+## $ revol_util                  &lt;dbl&gt; 83.70, 9.40, 98.50, 21.00, 53.90, ...
+## $ total_acc                   &lt;int&gt; 9, 4, 10, 37, 38, 12, 11, 4, 13, 3...
+## $ initial_list_status         &lt;fct&gt; f, f, f, f, f, f, f, f, f, f, f, f...
+## $ out_prncp                   &lt;dbl&gt; 0.00, 0.00, 0.00, 0.00, 766.90, 0....
+## $ out_prncp_inv               &lt;dbl&gt; 0.00, 0.00, 0.00, 0.00, 766.90, 0....
+## $ total_pymnt                 &lt;dbl&gt; 5861.071, 1008.710, 3003.654, 1222...
+## $ total_pymnt_inv             &lt;dbl&gt; 5831.78, 1008.71, 3003.65, 12226.3...
+## $ total_rec_prncp             &lt;dbl&gt; 5000.00, 456.46, 2400.00, 10000.00...
+## $ total_rec_int               &lt;dbl&gt; 861.07, 435.17, 603.65, 2209.33, 1...
+## $ total_rec_late_fee          &lt;dbl&gt; 0.00, 0.00, 0.00, 16.97, 0.00, 0.0...
+## $ recoveries                  &lt;dbl&gt; 0.00, 117.08, 0.00, 0.00, 0.00, 0....
+## $ collection_recovery_fee     &lt;dbl&gt; 0.0000, 1.1100, 0.0000, 0.0000, 0....
+## $ last_pymnt_d                &lt;fct&gt; Jan-2015, Apr-2013, Jun-2014, Jan-...
+## $ last_pymnt_amnt             &lt;dbl&gt; 171.62, 119.66, 649.91, 357.48, 67...
+## $ next_pymnt_d                &lt;fct&gt; , , , , Feb-2016, , Feb-2016, , , ...
+## $ last_credit_pull_d          &lt;fct&gt; Jan-2016, Sep-2013, Jan-2016, Jan-...
+## $ collections_12_mths_ex_med  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
+## $ mths_since_last_major_derog &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ policy_code                 &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1...
+## $ application_type            &lt;fct&gt; INDIVIDUAL, INDIVIDUAL, INDIVIDUAL...
+## $ annual_inc_joint            &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ dti_joint                   &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ verification_status_joint   &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ acc_now_delinq              &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
+## $ tot_coll_amt                &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ tot_cur_bal                 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ open_acc_6m                 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ open_il_6m                  &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ open_il_12m                 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ open_il_24m                 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ mths_since_rcnt_il          &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ total_bal_il                &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ il_util                     &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ open_rv_12m                 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ open_rv_24m                 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ max_bal_bc                  &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ all_util                    &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ total_rev_hi_lim            &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ inq_fi                      &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ total_cu_tl                 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ inq_last_12m                &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA...</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Find median loan_amnt, mean int_rate, and mean annual_inc with summarise()</span>
+lendingclub <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="kw">median</span>(loan_amnt), <span class="kw">mean</span>(int_rate), <span class="kw">mean</span>(annual_inc))</code></pre></div>
+<pre><code>##   median(loan_amnt) mean(int_rate) mean(annual_inc)
+## 1             11500       12.94198         62252.88</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Use ggplot2 to build a bar chart of purpose variable</span>
+lendingclub <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(purpose)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_bar</span>()</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Use recode() to create the new purpose_recode variable</span>
+lendingclub<span class="op">$</span>purpose_recode &lt;-<span class="st"> </span>lendingclub<span class="op">$</span>purpose <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">recode</span>( <span class="st">&quot;credit_card&quot;</span> =<span class="st"> &quot;debt_related&quot;</span>, <span class="st">&quot;debt_consolidation&quot;</span> =<span class="st"> &quot;debt_related&quot;</span>, <span class="st">&quot;medical&quot;</span> =<span class="st"> &quot;debt_related&quot;</span>,<span class="st">&quot;car&quot;</span> =<span class="st"> &quot;big_purchase&quot;</span>, <span class="st">&quot;major_purchase&quot;</span> =<span class="st"> &quot;big_purchase&quot;</span>, <span class="st">&quot;vacation&quot;</span> =<span class="st"> &quot;big_purchase&quot;</span>,<span class="st">&quot;moving&quot;</span> =<span class="st"> &quot;life_change&quot;</span>, <span class="st">&quot;small_business&quot;</span> =<span class="st"> &quot;life_change&quot;</span>, <span class="st">&quot;wedding&quot;</span> =<span class="st"> &quot;life_change&quot;</span>,<span class="st">&quot;house&quot;</span> =<span class="st"> &quot;home_related&quot;</span>, <span class="st">&quot;home_improvement&quot;</span> =<span class="st"> &quot;home_related&quot;</span>)</code></pre></div>
+<p>We are now going to perform a single factor experiment to see how does loan purpose affect loan amount.<br />
+Remember that for an ANOVA test, the null hypothesis will be that all of the mean funded amounts are equal across the levels of purpose_recode. The alternative hypothesis is that at least one level of purpose_recode has a different mean. We will not be sure which, however, without some post hoc analysis, so it will be helpful to know how ANOVA results get stored as an object in R.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Build a linear regression model, stored as purpose_model</span>
+purpose_model &lt;-<span class="st"> </span><span class="kw">lm</span>(funded_amnt<span class="op">~</span>purpose_recode, <span class="dt">data =</span> lendingclub)
+
+<span class="co"># Examine results of purpose_model</span>
+<span class="kw">summary</span>(purpose_model)</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = funded_amnt ~ purpose_recode, data = lendingclub)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -12144.7  -4966.9   -966.9   3533.1  26723.8 
+## 
+## Coefficients:
+##                                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                      6992.3      786.5   8.890  &lt; 2e-16 ***
+## purpose_recodedebt_related       5974.5      811.2   7.365 2.92e-13 ***
+## purpose_recodehome_related       6352.4     1108.6   5.730 1.21e-08 ***
+## purpose_recodelife_change        4274.6     1127.8   3.790 0.000157 ***
+## purpose_recodeother              1283.9     1033.9   1.242 0.214528    
+## purpose_recoderenewable_energy  -3992.3     6856.6  -0.582 0.560479    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 6811 on 1494 degrees of freedom
+## Multiple R-squared:  0.06156,    Adjusted R-squared:  0.05842 
+## F-statistic:  19.6 on 5 and 1494 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get anova results and save as purpose_anova</span>
+purpose_anova &lt;-<span class="st"> </span><span class="kw">anova</span>(purpose_model)
+
+<span class="co"># Examine class of purpose_anova</span>
+purpose_anova<span class="op">%&gt;%</span><span class="kw">class</span>()</code></pre></div>
+<pre><code>## [1] &quot;anova&quot;      &quot;data.frame&quot;</code></pre>
+<p>The low p-value suggests that the result of the ANOVA test is statistically significant; and thus we can reject the Null hypothesis and accept the alternate hypothesios that atleast one mean is different. But which one?<br />
+The post hoc test is done to determine which means of <code>purpose_recode</code> are different. We are going to use Tukey’s HSD test (Honest Significant Difference) using the function <code>TukeyHSD()</code>.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="left">comparison</th>
+<th align="right">estimate</th>
+<th align="right">conf.low</th>
+<th align="right">conf.high</th>
+<th align="right">adj.p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">purpose_recode</td>
+<td align="left">debt_related-big_purchase</td>
+<td align="right">5974.5321</td>
+<td align="right">3659.725</td>
+<td align="right">8289.339661</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">purpose_recode</td>
+<td align="left">home_related-big_purchase</td>
+<td align="right">6352.4035</td>
+<td align="right">3189.038</td>
+<td align="right">9515.769214</td>
+<td align="right">0.0000002</td>
+</tr>
+<tr class="odd">
+<td align="left">purpose_recode</td>
+<td align="left">life_change-big_purchase</td>
+<td align="right">4274.5681</td>
+<td align="right">1056.354</td>
+<td align="right">7492.782507</td>
+<td align="right">0.0021645</td>
+</tr>
+<tr class="even">
+<td align="left">purpose_recode</td>
+<td align="left">other-big_purchase</td>
+<td align="right">1283.8803</td>
+<td align="right">-1666.372</td>
+<td align="right">4234.132258</td>
+<td align="right">0.8161957</td>
+</tr>
+<tr class="odd">
+<td align="left">purpose_recode</td>
+<td align="left">renewable_energy-big_purchase</td>
+<td align="right">-3992.3333</td>
+<td align="right">-23557.093</td>
+<td align="right">15572.426481</td>
+<td align="right">0.9922056</td>
+</tr>
+<tr class="even">
+<td align="left">purpose_recode</td>
+<td align="left">home_related-debt_related</td>
+<td align="right">377.8714</td>
+<td align="right">-1922.577</td>
+<td align="right">2678.319940</td>
+<td align="right">0.9971881</td>
+</tr>
+<tr class="odd">
+<td align="left">purpose_recode</td>
+<td align="left">life_change-debt_related</td>
+<td align="right">-1699.9640</td>
+<td align="right">-4075.271</td>
+<td align="right">675.343322</td>
+<td align="right">0.3189031</td>
+</tr>
+<tr class="even">
+<td align="left">purpose_recode</td>
+<td align="left">other-debt_related</td>
+<td align="right">-4690.6518</td>
+<td align="right">-6687.942</td>
+<td align="right">-2693.361749</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">purpose_recode</td>
+<td align="left">renewable_energy-debt_related</td>
+<td align="right">-9966.8654</td>
+<td align="right">-29410.759</td>
+<td align="right">9477.028416</td>
+<td align="right">0.6882294</td>
+</tr>
+<tr class="even">
+<td align="left">purpose_recode</td>
+<td align="left">life_change-home_related</td>
+<td align="right">-2077.8354</td>
+<td align="right">-5285.737</td>
+<td align="right">1130.066277</td>
+<td align="right">0.4349662</td>
+</tr>
+<tr class="odd">
+<td align="left">purpose_recode</td>
+<td align="left">other-home_related</td>
+<td align="right">-5068.5232</td>
+<td align="right">-8007.522</td>
+<td align="right">-2129.524081</td>
+<td align="right">0.0000142</td>
+</tr>
+<tr class="even">
+<td align="left">purpose_recode</td>
+<td align="left">renewable_energy-home_related</td>
+<td align="right">-10344.7368</td>
+<td align="right">-29907.803</td>
+<td align="right">9218.329274</td>
+<td align="right">0.6586247</td>
+</tr>
+<tr class="odd">
+<td align="left">purpose_recode</td>
+<td align="left">other-life_change</td>
+<td align="right">-2990.6878</td>
+<td align="right">-5988.643</td>
+<td align="right">7.267763</td>
+<td align="right">0.0509787</td>
+</tr>
+<tr class="even">
+<td align="left">purpose_recode</td>
+<td align="left">renewable_energy-life_change</td>
+<td align="right">-8266.9014</td>
+<td align="right">-27838.911</td>
+<td align="right">11305.108642</td>
+<td align="right">0.8344517</td>
+</tr>
+<tr class="odd">
+<td align="left">purpose_recode</td>
+<td align="left">renewable_energy-other</td>
+<td align="right">-5276.2136</td>
+<td align="right">-24805.951</td>
+<td align="right">14253.524248</td>
+<td align="right">0.9723693</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 
