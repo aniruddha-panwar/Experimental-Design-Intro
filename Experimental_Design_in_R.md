@@ -345,7 +345,9 @@ aov(y~x,data=dat)
 ## Residual standard error: 0.8971513
 ## Estimated effects may be unbalanced
 ```
-  
+ 
+#### Use in single factor experiment
+
 Single factor experiment uses only one explanatory variable.  
 
 ```r
@@ -525,4 +527,49 @@ purpose_recode   renewable_energy-home_related    -10344.7368   -29907.803    92
 purpose_recode   other-life_change                 -2990.6878    -5988.643       7.267763     0.0509787
 purpose_recode   renewable_energy-life_change      -8266.9014   -27838.911   11305.108642     0.8344517
 purpose_recode   renewable_energy-other            -5276.2136   -24805.951   14253.524248     0.9723693
+  
+  If we look at the p-values for each comparison of the levels of `purpose_recode`, we can see that all the means are statistically significantly different. In this case, these tiny p-values are most likely to be due to large sample size, and further tests would be required to determine what's actually significant in the case of loans (known as the practical significance).  
+  
+  
+#### Use in multiple factor experiment
+  
+It is known in the real world that loan amounts aren't just driven by purpose alone. So lets try to bake in other independent variables into the model. 
+
+
+```r
+# examine how purpose_recode and emp_length affect the loan funded amount
+purpose_emp_aov <- aov(funded_amnt~purpose_recode+emp_length, data = lendingclub)
+
+#  Print
+purpose_emp_aov
+```
+
+```
+## Call:
+##    aov(formula = funded_amnt ~ purpose_recode + emp_length, data = lendingclub)
+## 
+## Terms:
+##                 purpose_recode  emp_length   Residuals
+## Sum of Squares      4547095997  1755465025 67557975343
+## Deg. of Freedom              5          11        1483
+## 
+## Residual standard error: 6749.44
+## Estimated effects may be unbalanced
+```
+
+```r
+# printing doesnt show p values but summary() does
+summary(purpose_emp_aov)
+```
+
+```
+##                  Df    Sum Sq   Mean Sq F value   Pr(>F)    
+## purpose_recode    5 4.547e+09 909419199  19.963  < 2e-16 ***
+## emp_length       11 1.755e+09 159587730   3.503 7.36e-05 ***
+## Residuals      1483 6.756e+10  45554940                     
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+  We could also perform Tukey's HSD test on this aov, but given that emp_length has 12 levels, it'll be quite the output. If it was important to the experiment to know the answer, we'd definitely need to look at it.
 

@@ -477,6 +477,8 @@ glm.fit &lt;-<span class="st"> </span><span class="kw">glm</span>(y<span class="
 ## 
 ## Residual standard error: 0.8971513
 ## Estimated effects may be unbalanced</code></pre>
+<div id="use-in-single-factor-experiment" class="section level4">
+<h4><span class="header-section-number">0.3.1.1</span> Use in single factor experiment</h4>
 <p>Single factor experiment uses only one explanatory variable.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lendingclub &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'./lendingclub.csv'</span>)
 
@@ -738,6 +740,36 @@ The post hoc test is done to determine which means of <code>purpose_recode</code
 </tr>
 </tbody>
 </table>
+<p>If we look at the p-values for each comparison of the levels of <code>purpose_recode</code>, we can see that all the means are statistically significantly different. In this case, these tiny p-values are most likely to be due to large sample size, and further tests would be required to determine what’s actually significant in the case of loans (known as the practical significance).</p>
+</div>
+<div id="use-in-multiple-factor-experiment" class="section level4">
+<h4><span class="header-section-number">0.3.1.2</span> Use in multiple factor experiment</h4>
+<p>It is known in the real world that loan amounts aren’t just driven by purpose alone. So lets try to bake in other independent variables into the model.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># examine how purpose_recode and emp_length affect the loan funded amount</span>
+purpose_emp_aov &lt;-<span class="st"> </span><span class="kw">aov</span>(funded_amnt<span class="op">~</span>purpose_recode<span class="op">+</span>emp_length, <span class="dt">data =</span> lendingclub)
+
+<span class="co">#  Print</span>
+purpose_emp_aov</code></pre></div>
+<pre><code>## Call:
+##    aov(formula = funded_amnt ~ purpose_recode + emp_length, data = lendingclub)
+## 
+## Terms:
+##                 purpose_recode  emp_length   Residuals
+## Sum of Squares      4547095997  1755465025 67557975343
+## Deg. of Freedom              5          11        1483
+## 
+## Residual standard error: 6749.44
+## Estimated effects may be unbalanced</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># printing doesnt show p values but summary() does</span>
+<span class="kw">summary</span>(purpose_emp_aov)</code></pre></div>
+<pre><code>##                  Df    Sum Sq   Mean Sq F value   Pr(&gt;F)    
+## purpose_recode    5 4.547e+09 909419199  19.963  &lt; 2e-16 ***
+## emp_length       11 1.755e+09 159587730   3.503 7.36e-05 ***
+## Residuals      1483 6.756e+10  45554940                     
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+<p>We could also perform Tukey’s HSD test on this aov, but given that emp_length has 12 levels, it’ll be quite the output. If it was important to the experiment to know the answer, we’d definitely need to look at it.</p>
+</div>
 </div>
 </div>
 

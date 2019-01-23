@@ -238,12 +238,14 @@ kable(tidy(tukey_output))
 
 
 ```
+  
   If we look at the p-values for each comparison of the levels of `purpose_recode`, we can see that all the means are statistically significantly different. In this case, these tiny p-values are most likely to be due to large sample size, and further tests would be required to determine what's actually significant in the case of loans (known as the practical significance).  
   
   
 #### Use in multiple factor experiment
   
-It is known in the real world that loan amounts aren't just driven by purpose alone. So lets try to bake in other independent variables into the model.  
+It is known in the real world that loan amounts aren't just driven by purpose alone. So lets try to bake in other independent variables into the model. 
+
 ```{r}
 # examine how purpose_recode and emp_length affect the loan funded amount
 purpose_emp_aov <- aov(funded_amnt~purpose_recode+emp_length, data = lendingclub)
@@ -255,5 +257,6 @@ purpose_emp_aov
 summary(purpose_emp_aov)
 
 ```
+
   We could also perform Tukey's HSD test on this aov, but given that emp_length has 12 levels, it'll be quite the output. If it was important to the experiment to know the answer, we'd definitely need to look at it.
 
