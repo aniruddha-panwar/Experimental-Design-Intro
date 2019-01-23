@@ -257,7 +257,7 @@ $(document).ready(function () {
 </ul>
 <p>Randomization, Replication and Blocking to keep bias low and asses variability of outcome.</p>
 <p>Randomization helps spread any variability that exists naturally between subjects evenly across groups. Replication repeats experiment to fully asses variability. Need to repeat an experiment with an adequate number of subjects to achieve an acceptable statistical power. Blocking helps control variability by making treatment groups more alike. Inside the groups the differences will be minimal; Across groups the differences will be larger.</p>
-<p>Dataset - <code>ToothGrowth</code><br />
+<p>Data set - <code>ToothGrowth</code><br />
 Has results of study that examined the effect of three different doses of Vitamin C on the length of the odontoplasts cells (responsible for tooth growth) in 60 guinea pigs.<br />
 <code>len</code> variable is the outcome variable corresponding to the tooth length.<br />
 Suppose its known that the average length of the guinea pigs odontoplasts is 18 micrometers, lets conduct a t-test to check that the mean of <code>len</code> is not equal to 18.</p>
@@ -277,10 +277,10 @@ Suppose its known that the average length of the guinea pigs odontoplasts is 18 
 ## sample estimates:
 ## mean of x 
 ##  18.81333</code></pre>
-<p>In the above two sided t-test, the null hypothesis is that the mean of <code>len</code> is not equal to 18. Given the high p-value we can say that we fail to reject the Null hypothesis. Thus there is evidence to believe that the mean length of the odontoplasts is 18 micometers.</p>
+<p>In the above <strong>two sided t-test</strong>, the null hypothesis is that the mean of <code>len</code> is not equal to 18. Given the high p-value (0.4135 ; at significance level of 0.05) we can say that we fail to reject the Null hypothesis. Thus there is evidence to believe that the mean length of the odontoplasts is 18 micrometers.</p>
 <div id="randomization" class="section level3">
 <h3><span class="header-section-number">0.1.1</span> Randomization</h3>
-<p>In the experiment that yielded the ToothGrowth dataset, guinea pigs were randomized to receive Vitamin C either through orange juice or ascorbic acid, indicated in the dataset by the <code>supp</code> variable. It’s natural to wonder if there is a difference in tooth length by supplement type - a question that a t-test can also answer!</p>
+<p>In the experiment that yielded the ToothGrowth data set, guinea pigs were randomized to receive Vitamin C either through orange juice or ascorbic acid, indicated in the data set by the <code>supp</code> variable. It’s natural to wonder if there is a difference in tooth length by supplement type - a question that a t-test can also answer!</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># t-test to determine if there is a difference in toothlength based on supplement</span>
 ToothGrowth_ttest &lt;-<span class="st"> </span><span class="kw">t.test</span>(len<span class="op">~</span>supp, <span class="dt">data =</span>  ToothGrowth)
 
@@ -345,11 +345,95 @@ ToothGrowth_aov &lt;-<span class="st"> </span><span class="kw">aov</span>(len <s
 </div>
 <div id="hypothesis-testing" class="section level2">
 <h2><span class="header-section-number">0.2</span> Hypothesis Testing</h2>
+<p>Is the question in mind. There are two types of hypothesis - Null and Alternate hypo.</p>
+<p><strong>NULL HYPOTHESIS</strong> - on the <code>ToothGrowth</code> data set would imply that there is no effect of Vit C. dosage or administration type on the length of the odontoplasts.</p>
+<ul>
+<li>there is no change</li>
+<li>no difference between groups</li>
+<li>mean, median, or observed statistic = a definite number</li>
+</ul>
+<p><strong>ALTERNATIVE HYPOTHESIS</strong> -</p>
+<ul>
+<li>there is a change</li>
+<li>difference between groups</li>
+<li>mean, median, observed statistic is &gt;, &lt; (<em>one sided test</em>) or != a number (<em>two sided test</em>)</li>
+</ul>
+<p>Terms to remember - * <em>Effect Size</em> - standardized difference of a statistic of two groups</p>
 <div id="one-sided-vs.two-sided-tests" class="section level3">
 <h3><span class="header-section-number">0.2.1</span> One Sided vs. Two Sided Tests</h3>
+<p>Recall in the first exercise that we tested to see if the mean of the guinea pigs’ teeth in <code>ToothGrowth</code> data set was not equal to 18 micrometers. That was an example of a two sided test: it looked to see if the mean of <code>len</code> is some other number on either side of 18.</p>
+<p>We can also conduct a one sided test, explicitly checking to see if the mean is less than or greater than 18. Whether to use a one or two sided test usually follows from your research question. Want to know if an intervention causes longer tooth growth? One sided, greater than. Want to know if a drug causes the test group to lose more weight? One sided, less than. Simply want to know if there’s a difference in test scores between two groups of students? Two sided test.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Test to see if mean length of odontoplasts is less than 18 - One sided test</span>
+<span class="kw">t.test</span>(<span class="dt">x=</span>ToothGrowth<span class="op">$</span>len, <span class="dt">alternative =</span> <span class="st">&quot;less&quot;</span>, <span class="dt">mu =</span> <span class="dv">18</span>)</code></pre></div>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  ToothGrowth$len
+## t = 0.82361, df = 59, p-value = 0.7933
+## alternative hypothesis: true mean is less than 18
+## 95 percent confidence interval:
+##      -Inf 20.46358
+## sample estimates:
+## mean of x 
+##  18.81333</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Test to see if mean length of odontoplasts is less than 18 - One sided test</span>
+<span class="kw">t.test</span>(<span class="dt">x=</span>ToothGrowth<span class="op">$</span>len, <span class="dt">alternative =</span> <span class="st">&quot;greater&quot;</span>, <span class="dt">mu =</span> <span class="dv">18</span>)</code></pre></div>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  ToothGrowth$len
+## t = 0.82361, df = 59, p-value = 0.2067
+## alternative hypothesis: true mean is greater than 18
+## 95 percent confidence interval:
+##  17.16309      Inf
+## sample estimates:
+## mean of x 
+##  18.81333</code></pre>
+<p>In both of the above one-sided tests the high p-value points to insufficient force to reject the Null hypothesis that the mean <code>len</code> is 18 micrometers.</p>
 </div>
 <div id="power-sample-size-calculations" class="section level3">
 <h3><span class="header-section-number">0.2.2</span> Power &amp; Sample Size Calculations</h3>
+<p><strong>POWER</strong> is the probability that the test correctly rejects the NULL hypo given the alternative hypo is TRUE.<br />
+Rule of thumb in statistics is to have 80% power which needs adequate sample size to achieve.<br />
+<strong>SAMPLE SIZE</strong> - as this increases, power increases; because we now have a better description of data.</p>
+<p>The <code>pwr</code> package can help calculate test power (can be achieved via other packages and base as well). Basically if two of <em>power, effect size</em> or <em>sample size</em> are known, the third can be calculated. A call to any <code>pwr.*()</code> function returns an object of class <code>power.htest</code>, which can then be manipulated in the same way as many different R objects.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(pwr)</code></pre></div>
+<pre><code>## Warning: package 'pwr' was built under R version 3.5.2</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Calculate power for an example</span>
+
+<span class="kw">pwr.t.test</span>(<span class="dt">n =</span> <span class="dv">100</span>, <span class="co"># number in each group</span>
+           <span class="dt">d =</span> <span class="fl">0.35</span>, <span class="co"># effect size</span>
+           <span class="dt">sig.level =</span> <span class="fl">0.10</span>, <span class="co"># significance level</span>
+           <span class="dt">type =</span> <span class="st">&quot;two.sample&quot;</span>, 
+           <span class="dt">alternative =</span> <span class="st">&quot;two.sided&quot;</span>,
+           <span class="dt">power =</span> <span class="ot">NULL</span>) <span class="co"># Leave the value to be caculated as NULL</span></code></pre></div>
+<pre><code>## 
+##      Two-sample t test power calculation 
+## 
+##               n = 100
+##               d = 0.35
+##       sig.level = 0.1
+##           power = 0.7943532
+##     alternative = two.sided
+## 
+## NOTE: n is number in *each* group</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Calculate sample size for an example</span>
+
+<span class="kw">pwr.t.test</span>(<span class="dt">n =</span> <span class="ot">NULL</span>, 
+           <span class="dt">d =</span> <span class="fl">0.25</span>, 
+           <span class="dt">sig.level =</span> <span class="fl">0.05</span>, 
+           <span class="dt">type =</span> <span class="st">&quot;one.sample&quot;</span>, <span class="dt">alternative =</span> <span class="st">&quot;greater&quot;</span>, 
+           <span class="dt">power =</span> <span class="fl">0.8</span>)</code></pre></div>
+<pre><code>## 
+##      One-sample t test power calculation 
+## 
+##               n = 100.2877
+##               d = 0.25
+##       sig.level = 0.05
+##           power = 0.8
+##     alternative = greater</code></pre>
+<p>In the first example Power is calculated at 79.44%, given 100 sample size in each group, effect size of 0.35 and significance level of 0.10.<br />
+In the second example above the sample size is calculated at 100.29 given Power of 80%, effect size of 0.25 and significance level of 0.05.</p>
 </div>
 </div>
 

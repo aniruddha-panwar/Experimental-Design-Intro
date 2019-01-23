@@ -28,7 +28,7 @@ Randomization helps spread any variability that exists naturally between subject
 Replication repeats experiment to fully asses variability. Need to repeat an experiment with an adequate number of subjects to achieve an acceptable statistical power.
 Blocking helps control variability by making treatment groups more alike. Inside the groups the differences will be minimal; Across groups the differences will be larger.  
   
-Dataset - `ToothGrowth`  
+Data set - `ToothGrowth`  
 Has results of study that examined the effect of three different doses of Vitamin C on the length of the odontoplasts cells (responsible for tooth growth) in 60 guinea pigs.  
 `len` variable is the outcome variable corresponding to the tooth length.  
 Suppose its known that the average length of the guinea pigs odontoplasts is 18 micrometers, lets conduct a t-test to check that the mean of `len` is not equal to 18.
@@ -40,11 +40,11 @@ data(ToothGrowth)
 
 t.test(x=ToothGrowth$len, alternative = "two.sided", mu = 18)
 ```
-In the above two sided t-test, the null hypothesis is that the mean of `len` is not equal to 18. Given the high p-value we can say that we fail to reject the Null hypothesis. Thus there is evidence to believe that the mean length of the odontoplasts is 18 micometers.  
+In the above **two sided t-test**, the null hypothesis is that the mean of `len` is not equal to 18. Given the high p-value (0.4135 ; at significance level of 0.05) we can say that we fail to reject the Null hypothesis. Thus there is evidence to believe that the mean length of the odontoplasts is 18 micrometers.  
 
 ### Randomization
 
-In the experiment that yielded the ToothGrowth dataset, guinea pigs were randomized to receive Vitamin C either through orange juice or ascorbic acid, indicated in the dataset by the `supp` variable. It's natural to wonder if there is a difference in tooth length by supplement type - a question that a t-test can also answer!
+In the experiment that yielded the ToothGrowth data set, guinea pigs were randomized to receive Vitamin C either through orange juice or ascorbic acid, indicated in the data set by the `supp` variable. It's natural to wonder if there is a difference in tooth length by supplement type - a question that a t-test can also answer!
 
 ```{r }
 # t-test to determine if there is a difference in toothlength based on supplement
@@ -92,8 +92,72 @@ Small p value of `dose` seems to suggest a driving effect on `len`.
   
 ## Hypothesis Testing
   
+Is the question in mind. There are two types of hypothesis - Null and Alternate hypo.  
+
+**NULL HYPOTHESIS** - on the `ToothGrowth` data set would imply that there is no effect of Vit C. dosage or administration type on the length of the odontoplasts.
+
+* there is no change
+* no difference between groups
+* mean, median, or observed statistic = a definite number
+
+**ALTERNATIVE HYPOTHESIS** - 
+
+* there is a change
+* difference between groups
+* mean, median, observed statistic is >, < (*one sided test*) or != a number (*two sided test*)  
+  
+Terms to remember -
+* *Effect Size* - standardized difference of a statistic of two groups
+
 ### One Sided vs. Two Sided Tests
+
+Recall in the first exercise that we tested to see if the mean of the guinea pigs' teeth in `ToothGrowth` data set was not equal to 18 micrometers. That was an example of a two sided test: it looked to see if the mean of `len` is some other number on either side of 18.  
+  
+We can also conduct a one sided test, explicitly checking to see if the mean is less than or greater than 18. Whether to use a one or two sided test usually follows from your research question. Want to know if an intervention causes longer tooth growth? One sided, greater than. Want to know if a drug causes the test group to lose more weight? One sided, less than. Simply want to know if there's a difference in test scores between two groups of students? Two sided test.  
+  
+```{r}
+# Test to see if mean length of odontoplasts is less than 18 - One sided test
+t.test(x=ToothGrowth$len, alternative = "less", mu = 18)
+
+# Test to see if mean length of odontoplasts is less than 18 - One sided test
+t.test(x=ToothGrowth$len, alternative = "greater", mu = 18)
+```
+  
+In both of the above one-sided tests the high p-value points to insufficient force to reject the Null hypothesis that the mean `len` is 18 micrometers.
 
 ### Power & Sample Size Calculations
 
+**POWER** is the probability that the test correctly rejects the NULL hypo given the alternative hypo is TRUE.  
+Rule of thumb in statistics is to have 80% power which needs adequate sample size to achieve.  
+**SAMPLE SIZE** - as this increases, power increases; because we now have a better description of data.  
+  
+  
+The `pwr` package can help calculate test power (can be achieved via other packages and base as well). Basically if two of *power, effect size* or *sample size* are known, the third can be calculated.
+  A call to any `pwr.*()` function returns an object of class `power.htest`, which can then be manipulated in the same way as many different R objects.  
+ 
+ 
+```{r}
+library(pwr)
+
+# Calculate power for an example
+
+pwr.t.test(n = 100, # number in each group
+           d = 0.35, # effect size
+           sig.level = 0.10, # significance level
+           type = "two.sample", 
+           alternative = "two.sided",
+           power = NULL) # Leave the value to be caculated as NULL
+
+# Calculate sample size for an example
+
+pwr.t.test(n = NULL, 
+           d = 0.25, 
+           sig.level = 0.05, 
+           type = "one.sample", alternative = "greater", 
+           power = 0.8)
+```
+  In the first example Power is calculated at 79.44%, given 100 sample size in each group, effect size of 0.35 and significance level of 0.10.  
+  In the second example above the sample size is calculated at 100.29 given Power of 80%, effect size of 0.25 and significance level of 0.05.  
+  
+  
   
