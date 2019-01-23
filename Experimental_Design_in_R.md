@@ -291,6 +291,59 @@ pwr.t.test(n = NULL,
 ```
   In the first example Power is calculated at 79.44%, given 100 sample size in each group, effect size of 0.35 and significance level of 0.10.  
   In the second example above the sample size is calculated at 100.29 given Power of 80%, effect size of 0.25 and significance level of 0.05.  
+    
   
+##  Single and Multiple Factor Experiments
+
+
+### ANOVA  
   
-  
+Allows  us to test across >2 groups. For e.g. given 3 groups of sample size 100 each, ANOVA can be used to determine if the sample mean is different. The catch here however is that though the ANOVA might suggest a diiferent mean for one group over others, it will not specify the group with the different mean.
+  Two ways to perform anova - 
+
+```r
+set.seed(1)
+x = 1:40
+y = rnorm(x)
+dat <- data.frame(x=x,y=y)
+
+# First way to ANOVA is to build model (lm/glm etc.) and then call anova()
+glm.fit <- glm(y~x,data = dat)
+
+anova(glm.fit)
+```
+
+```
+## Analysis of Deviance Table
+## 
+## Model: gaussian, link: identity
+## 
+## Response: y
+## 
+## Terms added sequentially (first to last)
+## 
+## 
+##      Df Deviance Resid. Df Resid. Dev
+## NULL                    39     30.661
+## x     1 0.075499        38     30.585
+```
+
+```r
+# Second way to anova is to call aov; which builds an lm in itself
+aov(y~x,data=dat)
+```
+
+```
+## Call:
+##    aov(formula = y ~ x, data = dat)
+## 
+## Terms:
+##                         x Residuals
+## Sum of Squares   0.075499 30.585457
+## Deg. of Freedom         1        38
+## 
+## Residual standard error: 0.8971513
+## Estimated effects may be unbalanced
+```
+
+### 
